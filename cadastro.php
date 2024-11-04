@@ -38,29 +38,72 @@
     </form>
 
     <?php
-        if(isset($_POST['nome']))
-        {
-            $nome = $_POST['nome'];
-            $telefone = $_POST['tel'];
-            $email = $_POST['email'];
-            $senha = $_POST['senha'];
-            $confSenha = addslashes($_POST['confsenha']);
+    if(isset($_POST['nome']))
+    {
+        $nome = $_POST['nome'];
+        $telefone = $_POST['tel'];
+        $email = $_POST['email'];
+        $senha = $_POST['senha'];
+        $confSenha = addslashes( $_POST['confsenha']);
 
-            //verificar se todos os compos estão preenchidos
-            if(!empty($nome) && !empty($telefone) && !empty($email) && !empty($senha) && !empty($confSenha))
+        // Verificar se todos os campos estao preenchidos
+        if(!empty($nome) && !empty($telefone) && !empty($email) && !empty($senha))
+        {
+            $usuario->conectar("cadastroturma32", "localhost", "root", "");
+            if($usuario->msgErro == "")
             {
-                $usuario->conectar("cadastroturma32" , "localhost" , "root" , "");
-                if($usuario->msgErro == "")
+                if($senha == $confSenha)
                 {
-                    echo "conectou";
+                    if($usuario->cadastrar($nome,$telefone,$email,$senha))
+                    {
+                        ?>
+
+                            <div id="msn-sucesso">
+                                Cadastrado com sucesso
+                                Clique <a href="index.php">aqui</a> para logar
+                            </div>
+                        <?php
+                        
+                    }
+                    else
+                    {
+                        ?>
+                        <div id="msn-sucesso">
+                            E-mail já cadasatrado! 
+                        </div>
+                        <?php
+                    }
                 }
-                else{
-                    echo "Erro..... tente outra vez.....".$usuario->msgErro;
+                else
+                {
+                    ?>
+                    <div id="msn-sucesso">
+                        A senha e Confirmar Senha não conferem!
+                    </div>
+                    <?php
                 }
             }
+            else
+            {
+                ?>
+                <div id="msn-sucesso">
+                    <?php echo "Erro: ".$usuario->msgErro;?>
+                </div>
+                <?php
+            }
         }
-    
-    ?>
-    
+        else
+        {
+            ?>
+            <div id="msn-sucesso">
+                Preencha todos os campos!
+            </div>
+            <?php
+        }
+    }
+
+?>
 </body>
-</html
+</html>
+
+  
