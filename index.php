@@ -1,6 +1,6 @@
 <?php
     require_once 'usuario.php';
-    $usuario = new Usuario()
+    $usuario = new Usuario();
 
 
 ?>
@@ -17,10 +17,10 @@
     <h3>TELA LOGIN</h3>
 
     <form method="post">
-        <lable>Usuário: </lable>
+        <label>Usuário: </label>
         <input type="email" name="email" id=""
         placeholder="Digite seu email.">
-        <lable>Senha: </lable>
+        <label>Senha: </label>
         <input type="password" name="senha" id=""
         placeholder="Digite sua senha.">
         <input type="submit" value="LOGAR">
@@ -29,19 +29,17 @@
 
 <?php
 
-    if(isset($_POST["email"]))
-    {
+    if(isset($_POST["email"])){
         $email = addslashes($_POST['email']);
         $senha = addslashes($_POST['senha']);
 
         if(!empty($email) && !empty($senha))
         {
             $usuario->conectar("cadastroturma32","localhost","root","");
-            if($usuario->msqErro == "")
+            if($usuario->msgErro == "")
             {
-                ($usuario->logar($email, $senha))
-                {
-                    header("location: areaprivada.php");
+                if($usuario->logar($email, $senha)){
+                    header("location:areaprivada.php");
                 }
             }
             else
