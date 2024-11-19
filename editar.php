@@ -10,27 +10,27 @@ if (!isset($_SESSION['id_usuario'])) {
 require_once 'usuario.php'; // Inclui a classe de usuário
 $usuario = new Usuario();
 
+// Conectar ao banco de dados
+$usuario->conectar("cadastroturma32", "localhost", "root", "");
+
+// Verifica se a conexão foi bem-sucedida
+if ($usuario->msgErro != "") {
+    echo "Erro ao conectar ao banco de dados: " . $usuario->msgErro;
+    exit();
+}
+
 // Verifica se o parâmetro 'id' foi passado pela URL
 if (isset($_GET['id'])) {
     $id_usuario = intval($_GET['id']); // Pega o ID do usuário a ser editado
 
-    // Conectar ao banco de dados
-    $usuario->conectar("cadastroturma32", "localhost", "root", "");
-
-    // Verifica se a conexão foi bem-sucedida
-    if ($usuario->msgErro != "") {
-        echo "Erro ao conectar ao banco de dados: " . $usuario->msgErro;
-        exit();
-    }
-
     // Busca os dados do usuário
-    $sql = "SELECT * FROM usuarios WHERE id_usuario = :id_usuario";
+    $sql = "SELECT * FROM usuarios WHERE id_usuario = :id";
     $sql = $usuario->getPdo()->prepare($sql);
-    $sql->bindValue(":id_usuario", $id_usuario);
+    $sql->bindValue(":id", $id_usuario);
     $sql->execute();
 
     if ($sql->rowCount() > 0) {
-        $usuario_data = $sql->fetch(PDO::FETCH_ASSOC); // Pega os dados do usuário
+        $usuario_data = $sql->fetch(PDO::FETCH_ASSOC);
         $nome = $usuario_data['nome'];
         $telefone = $usuario_data['telefone'];
         $email = $usuario_data['email'];
