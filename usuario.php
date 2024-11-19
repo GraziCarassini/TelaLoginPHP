@@ -6,14 +6,17 @@
         public $msgErro="";
 
         public function conectar($nome, $host, $usuario, $senha){
-            global $pdo;
 
             try{
-                $pdo = new PDO("mysql:dbname=".$nome,$usuario,$senha);
+                $this->pdo = new PDO("mysql:dbname=".$nome.";host=".$host, $usuario, $senha);
             }
             catch (PDOException $erro){
-                $msgErro = $erro->getMessage();
+                $this->msgErro = $erro->getMessage();
             }
+        }
+
+        public function getPdo() {
+            return $this->pdo;
         }
 
         public function cadastrar($nome,$telefone,$email,$senha){
@@ -36,25 +39,62 @@
             }
         }
 
-        public function logar($email,$senha)
-        {
-            global $pdo;
-            $verificarEmailSenha = $pdo->prepare("SELECT id_usuario FROM usuarios WHERE email = :e AND senha = :s");
-            $verificarEmailSenha->bindValue(":e" , $email);
-            $verificarEmailSenha->bindValue(":s" , md5($senha));
-            $verificarEmailSenha->execute();
-            if($verificarEmailSenha->rowCount()>0)
-            {
-                $dados = $verificarEmailSenha->fetch();
+        public function logar($email,$senha){
+
+            $sql = $this->pdo->prepare("SELECT id_usuario FROM usuarios WHERE email = :e AND senha = :s");
+            $sql->bindValue(":e", $email);
+            $sql->bindValue(":s", md5($senha));
+            $sql->execute();
+            if ($sql->rowCount() > 0) {
+                $dados = $sql->fetch();
                 session_start();
                 $_SESSION['id_usuario'] = $dados['id_usuario'];
                 return true;
-            }
-            else{
+            } else {
                 return false;
             }
         }
-    }
+
+
+
+        public function listar() {
+            $sql = "SELECT id_usuario, email FROM usuarios"; // seleciona todos os  do BD
+            $sql = $this->pdo->query($sql); // Executa a query
+    
+            if ($sql->rowCount() > 0) {
+                return $sql->fetchAll(PDO::FETCH_ASSOC);
+            }
+            return [];
+        }
+
+        public function editar($id_usuario, $nome, $telefone, $email, $senha = null) {
+           
+        
+                $sql = "UPDATE usuarios SET nome = :nome, telefone = :telefone, email = :email, senha = :senha WHERE id_usuario = :id_usuario";
+                $sql = $pdo->prepare($sql);
+                $sql->bindValue(":nome", $nome);
+                $sql->bindValue(":telefone", $telefone);
+                $sql->bindValue(":email", $email);
+                $sql->bindValue(":senha", md5($senha));
+                $sql->bindValue(":id_usuario", $id_usuario);
+        
+                return $sql->execute();
+    
+        }
+        
+
+        public function deletar($id_usuario) {
+           
+            $sql = $this->pdo->prepare("DELETE FROM usuarios WHERE id_usuario = :id_usuario");
+            $sql->bindValue(":id_usuario", $id_usuario);
+            $sql->execute();
+
+            if ($sql->rowCount() > 0) {
+                return true;
+            }
+            return false;
+        }
         
         
+    }    
 ?>
