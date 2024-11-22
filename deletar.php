@@ -1,9 +1,8 @@
 <?php
     session_start();
 
-    //verifica se está logado
     if (!isset($_SESSION['id_usuario'])) {
-        header("Location: index.php"); // Se não vai para login
+        header("Location: index.php"); 
         exit;
     }
 
@@ -21,9 +20,9 @@
             exit();
         }
 
-        // Chama o método deletar
+
         if ($usuario->deletar($id_usuario)) {
-            // Se der certo vai para listar
+        
             header("Location: listar.php");
             exit();
         } else {

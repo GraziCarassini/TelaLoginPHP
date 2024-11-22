@@ -20,16 +20,15 @@
         }
 
         public function cadastrar($nome,$telefone,$email,$senha){
-            global $pdo;
             //Verificar se o email já está cadastrado//
-            $sql = $pdo->prepare("SELECT id_usuario FROM usuarios WHERE email = :m");
+            $sql = $this->pdo->prepare("SELECT id_usuario FROM usuarios WHERE email = :m");
             $sql->bindValue(":m", $email);
             $sql->execute();
             if($sql->rowCount()>0){
                 return false;
             }
             else{
-                $sql = $pdo->prepare("INSERT INTO usuarios (nome,telefone,email,senha) VALUES (:n, :t, :e, :s)");
+                $sql = $this->pdo->prepare("INSERT INTO usuarios (nome,telefone,email,senha) VALUES (:n, :t, :e, :s)");
                 $sql->bindValue(":n", $nome);
                 $sql->bindValue(":t", $telefone);
                 $sql->bindValue(":e", $email);
@@ -67,20 +66,25 @@
             return [];
         }
 
-        public function editar($id_usuario, $nome, $telefone, $email, $senha = null) {
-           
         
-                $sql = "UPDATE usuarios SET nome = :nome, telefone = :telefone, email = :email, senha = :senha WHERE id_usuario = :id_usuario";
-                $sql = $pdo->prepare($sql);
-                $sql->bindValue(":nome", $nome);
-                $sql->bindValue(":telefone", $telefone);
-                $sql->bindValue(":email", $email);
-                $sql->bindValue(":senha", md5($senha));
-                $sql->bindValue(":id_usuario", $id_usuario);
+        public function editar($id_usuario, $nome, $telefone, $email) {
+            
+            $sql = "UPDATE usuarios SET nome = :nome, telefone = :telefone, email = :email WHERE id_usuario = :id_usuario";
         
-                return $sql->execute();
-    
+            
+            $sql = $this->pdo->prepare($sql);
+            
+            
+            $sql->bindValue(":nome", $nome);
+            $sql->bindValue(":telefone", $telefone);
+            $sql->bindValue(":email", $email);
+            $sql->bindValue(":id_usuario", $id_usuario);
+            
+            
+            return $sql->execute();
         }
+        
+        
         
 
         public function deletar($id_usuario) {
